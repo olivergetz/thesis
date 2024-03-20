@@ -1,0 +1,5 @@
+1. conda create env -n semsearch python=3.10
+2. conda activate semsearch
+3. pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+4. pip install -r clap_requirements.txt
+5. pip install laion-clap
