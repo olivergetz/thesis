@@ -1,0 +1,14 @@
+{
+    "experiment_name": "zero_shot",
+    "dataset_drive": "D:/",
+    "dataset_path": "datasets/soundly_processed.csv",
+    "train_set_path": "datasets/soundly/soundly_train_set.csv",
+    "dev_set_path": "datasets/soundly/soundly_dev_set.csv",
+    "test_set_path": "datasets/soundly/soundly_test_set.csv",
+    "k_fold_200-laion_audio_embeddings": "data/zero-shot_classification/k_fold_test/k_200/laion/",
+    "k_fold_200-msclap_audio_embeddings": "data/zero-shot_classification/k_fold_test/k_200/msclap/",
+    "k_fold_200-ground_truth": "data/zero-shot_classification/k_fold_test/k_200/csv/",
+    "k_fold_17-laion_audio_embeddings": "data/zero-shot_classification/k_fold_test/k_17_no_overlap/laion/",
+    "k_fold_17-msclap_audio_embeddings": "data/zero-shot_classification/k_fold_test/k_17_no_overlap/msclap/",
+    "k_fold_17-ground_truth": "data/zero-shot_classification/k_fold_test/k_17_no_overlap/csv/"
+}
