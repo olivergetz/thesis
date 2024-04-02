@@ -58,6 +58,12 @@ class DatasetUCS(Dataset):
         """
         return self.unique_classes
     
+    def merge_classes(self, from_class:str, to_class:str):
+        """
+        Returns a list of all classes used in the dataset.
+        """
+        print(type(self.targets))
+    
     def __len__(self):
         return len (self.audio_paths)
 
