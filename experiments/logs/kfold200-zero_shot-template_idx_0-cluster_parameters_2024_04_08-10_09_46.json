@@ -1,0 +1,1 @@
+{"experiment_name": "kfold200-zero_shot-template_idx_0-cluster_parameters", "time": "2024_04_08-10_09_46", "results": {"clean": {"seed": 1337, "tsne_iterations": 5000, "msclap": {"mean": -0.0033820613753050566, "variance": 1.0323097705841064, "std": 1.016026496887207}, "laion": {"mean": -0.0003831713693216443, "variance": 0.0019529782002791762, "std": 0.04419251158833504}}}}

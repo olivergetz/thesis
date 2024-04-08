@@ -1,5 +1,5 @@
 import torch
-from dataset import DatasetUCS
+from utils.dataset import DatasetUCS
 from sklearn.metrics import accuracy_score, average_precision_score, recall_score, precision_score, f1_score
 import os
 import numpy as np
@@ -15,7 +15,7 @@ def k_fold_zs_evaluation(true, pred):
     
     return accuracy, precision, recall, f1, average_precision
 
-def k_fold_zs_predict(settings, audio_embeddings:torch.Tensor, text_encoding_func, similarity_func, device, topk:int=1, merge_classes=list[list]):
+def k_fold_zs_predict(settings, audio_embeddings:torch.Tensor, text_encoding_func, similarity_func, device, topk:int=1, temp_aug:str=""):
     """
     This function evaluates pytorch audio embeddings on zero-shot classification.
 
@@ -27,12 +27,18 @@ def k_fold_zs_predict(settings, audio_embeddings:torch.Tensor, text_encoding_fun
     - similarity_func: function to be used to compute similarity. Must take two sets of embeddings as input.
     - k_folds: must be equal or less than the number of folds
     - topk: output the top-k predictions. Adds an extra dimension to the prediction output.
+    - temp_aug: augmentation to prepend to class names
     """
     from tqdm import tqdm
 
     # Load USC Classes
     with open (settings['class_converter'], 'r') as f:
         ucs_classes = json.load (f)
+
+    # Augmentations
+    if (temp_aug != ""):
+        ucs_classes['class_to_int'] = {temp_aug+k:v for (k,v) in ucs_classes['class_to_int'].items()}
+        ucs_classes['int_to_class'] = {k:temp_aug+v for (k,v) in ucs_classes['int_to_class'].items()}
 
     ground_truth_path = settings['ground_truth']
 
@@ -48,6 +54,9 @@ def k_fold_zs_predict(settings, audio_embeddings:torch.Tensor, text_encoding_fun
 
         for i in tqdm(range(len(dataset)), leave=False):
             _, _, class_name = dataset[i] # gold label
+
+            # Augment
+            class_name = temp_aug + class_name
             
             current_emb = pred_fold[i].to(device)
             similarities = similarity_func(current_emb, torch.Tensor(label_embeddings).to(device))
@@ -81,3 +90,22 @@ def load_embeddings_from_disk(dir_path:str):
             audio_embeddings = torch.load(dir_path + file).unsqueeze(0)
 
     return audio_embeddings
+
+
+if __name__ == "__main__":
+    from dataset import DatasetUCS
+        # Load USC Classes
+    with open ('C:/Users/olive/Documents/Programming_Environment/python_scripting/thesis/experiments/data/ucs_official/ucs_classes.json', 'r') as f:
+        ucs_classes = json.load (f)
+
+    temp_aug = "this is the sound of "
+
+    # Augmentations
+    class_to_int = ucs_classes['class_to_int']
+    int_to_class = ucs_classes['int_to_class']
+
+    print(ucs_classes['int_to_class'])
+    ucs_classes['class_to_int'] = {temp_aug+k:v for (k,v) in ucs_classes['class_to_int'].items()}
+    ucs_classes['int_to_class'] = {k:temp_aug+v for (k,v) in ucs_classes['int_to_class'].items()}
+    print(ucs_classes['int_to_class'])
+    
