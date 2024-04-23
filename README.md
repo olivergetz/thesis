@@ -1,4 +1,4 @@
-###### [Overview](#Comparing-Contrastive-Representations-Through-Proprietary-Audio-Collections) | [Setup](#Setup) 
+###### [Overview](#Comparing-Contrastive-Representations-Through-Proprietary-Audio-Collections) | [Setup](#Setup) | [Reproduction](#Reproduction)
 
 ## Comparing Contrastive Representations Through Proprietary Audio Collections
 
@@ -15,7 +15,7 @@ are evaluated on a variety of tasks using a proprietary audio collection.
 
 ## Setup
 
-To reproduce these experiments, audio embeddings may be downloaded from INSERT LINK. Packages for the clap-testing environment must be installed in the following order to not cause conflicts. There is a bug in laion-clap that is circumvented by using version transformers version 4.30. 
+Packages for the clap-testing environment must be installed in the following order to not cause conflicts. There is a bug in laion-clap that is circumvented by using version transformers version 4.30. 
 
 ```shell
 # Create Environment
@@ -29,3 +29,6 @@ conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvi
 conda install conda-forge::transformers=4.30
 pip install chardet
 ```
+## Reproduction
+
+To reproduce these experiments, audio embeddings may be downloaded from INSERT LINK. Place it in experiments/data. You can then run the experiment notebooks, found in the experiments folder, from top to bottom.
