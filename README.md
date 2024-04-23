@@ -1,4 +1,4 @@
-###### [Overview](#Comparing Contrastive Representations Through Proprietary Audio Collections) | [Setup](#Setup) 
+###### [Overview](#Comparing-Contrastive-Representations-Through-Proprietary-Audio-Collections) | [Setup](#Setup) 
 
 
 ## Comparing Contrastive Representations Through Proprietary Audio Collections
