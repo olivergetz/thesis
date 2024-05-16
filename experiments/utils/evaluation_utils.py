@@ -5,6 +5,89 @@ import os
 import numpy as np
 import pandas as pd
 import json
+from typing import Literal
+
+def precision_at_k(x):
+    """
+    Iterates over a list sorted from most to least relevant and returns the cumulative precision at each step.
+
+    Args:
+        x: one-hot list of relevant hits. Must be ordered by relevance.
+    """
+    n_hits = 0
+    prec_k = []
+    for i, relevance in enumerate(x):
+        if relevance == 1:
+            n_hits += 1
+
+        prec_k.append(n_hits / (i+1))
+
+    return n_hits, prec_k
+
+def mean_avg_precision_at_k(query_results):
+    """
+    Iterates over a list of query results, one-hot encoded by relevance.
+
+    Args:
+        query_results: list of one-hot encodings marking the relevance of a query result. Sub-lists must be ordered by relevance.
+    """
+    import math
+    ap_all_queries = []
+    for result in query_results:
+        # precision@k
+        n_hits, prec_k = precision_at_k(result)
+        hit_prec_k = np.array(result) * np.array(prec_k)
+        ap = hit_prec_k.sum() / n_hits
+        if (math.isnan(ap)):
+            ap_all_queries.append(0)
+        else:
+            ap_all_queries.append(ap.sum() / n_hits)
+
+    return np.array(ap_all_queries).mean()
+
+def semantic_search(prompt:str, n_return:int=10, audio_embeddings=None, model:Literal["msclap", "laion"]='msclap', device=torch.device):
+    """
+    Given a prompt, return audio files with the most similar semantic similarity. Based on LAION CLAP and MSCLAP.
+
+    To do: shorten search time by limiting searches to the most likely category. Currently: 6.2 sec.
+
+    Args.
+    - prompt: A string containing the entire search query.
+    - n_return: How many files the query should return.
+    - audio_embeddings: The audio embeddings to compare with.
+
+    Returns a list of indeces, ranked from most to least relevant.
+    """
+    from msclap import CLAP
+    import laion_clap
+    
+    if (audio_embeddings == None): 
+        print("Please provide a list of audio embeddings.")
+        return
+    
+    # Extract text embeddings
+    if (model == 'laion'):
+        
+        laion_clap_model = laion_clap.CLAP_Module(enable_fusion=False)
+        laion_clap_model.load_ckpt()
+        laion_clap_model.to(device)
+        text_data = ["", prompt] # CLAP has a bug where two text prompts are required. Discard the first.
+        text_embedding = laion_clap_model.get_text_embedding(text_data)[1]
+        cos = torch.cosine_similarity
+    elif (model == 'msclap'):
+        msclap_model = CLAP(version = '2023', use_cuda=True) # version can be 2022 or 2023
+        text_embedding = msclap_model.get_text_embeddings([prompt])
+        cos = msclap_model.compute_similarity
+    else:
+        print("The model must be either 'msclap' or 'laion'.")
+        return
+
+    audio_embeddings.to('cuda')
+    similarities = torch.tensor([cos(embedding.clone().detach(), torch.tensor(text_embedding).clone().detach().to('cuda')) for embedding in audio_embeddings])
+    idx = torch.argsort(similarities, dim=0, descending=True)
+
+    return idx[:n_return]
+
 
 def k_fold_zs_evaluation(true, pred):
     accuracy = accuracy_score(true, pred)
@@ -93,6 +176,24 @@ def load_embeddings_from_disk(dir_path:str):
 
 
 if __name__ == "__main__":
+
+    relevant = [
+        [1, 1, 1, 0, 0, 0, 0, 0, 0, 1], # Relevance for the top 10 query results for query 1. Getting a lot of weather, but not necessarily wind.
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], # etc ... 
+        [1, 0, 1, 0, 0, 0, 0, 0, 0, 1], # Metallic. Results in a lot of musical sounds, glock, vibraphone, etc.
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], # Lots of sizzling sounds, close to electricity.
+        [0, 1, 1, 0, 0, 1, 0, 0, 1, 0],
+        [0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
+        [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 1, 1, 0, 0],
+        [0, 1, 1, 0, 1, 0, 0, 0, 0, 1],
+        [1, 0, 0, 1, 1, 0, 0, 0, 1, 0]
+    ]
+
+    print(mean_avg_precision_at_k(relevant))
+
+
+    """
     from dataset import DatasetUCS
         # Load USC Classes
     with open ('C:/Users/olive/Documents/Programming_Environment/python_scripting/thesis/experiments/data/ucs_official/ucs_classes.json', 'r') as f:
@@ -108,4 +209,4 @@ if __name__ == "__main__":
     ucs_classes['class_to_int'] = {temp_aug+k:v for (k,v) in ucs_classes['class_to_int'].items()}
     ucs_classes['int_to_class'] = {k:temp_aug+v for (k,v) in ucs_classes['int_to_class'].items()}
     print(ucs_classes['int_to_class'])
-    
+    """

@@ -1,1 +1,0 @@
-{"experiment_name": "kfold200-zero_shot-template_idx_6-cluster_parameters", "time": "2024_04_08-10_35_26", "results": {"i can hear": {"seed": 1337, "tsne_iterations": 5000, "msclap": {"mean": -0.0019279362168163061, "variance": 1.0152630805969238, "std": 1.0076026916503906}, "laion": {"mean": 0.0016876175068318844, "variance": 0.0019502766663208604, "std": 0.04416193813085556}}}}

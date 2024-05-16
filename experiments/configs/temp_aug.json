@@ -9,7 +9,7 @@
     "msclap_audio_embeddings": "data/zero-shot_classification/k_fold_test/k_200/msclap/",
     "ground_truth": "data/zero-shot_classification/k_fold_test/k_200/csv/",
     "class_converter": "data/ucs_official/ucs_classes.json", 
-    "template_augmentations": ["", "this is a sound of ", "this is ", "this is an audio of ", "an audio of ", "i am hearing ", "i can hear ", "i am feeling ", "i am touching ", "this is a sentence about "],
+    "template_augmentations": ["", "the sound of ", "this is a sound of ", "this is ", "this is an audio of ", "an audio of ", "i am hearing ", "i can hear ", "this person is feeling ", "i am feeling ", "i am touching ", "this is a sentence about "],
     "transform_type": "MagnitudeSTFT",
     "audio_encoder_path" : "model_weights/htsat/HTSAT_AudioSet_Saved_6.ckpt",
     "text_encoder_name" : "roberta-base",
